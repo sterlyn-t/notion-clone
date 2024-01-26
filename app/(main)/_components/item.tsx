@@ -1,10 +1,14 @@
 "use client";
 
 import React from "react";
-import LucideIcon, { ChevronRight, ChevronDown } from "lucide-react";
+import { ChevronRight, ChevronDown, Plus, LucideIcon } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Id } from "@/convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 interface ItemProps {
   id?: Id<"documents">;
@@ -38,6 +42,29 @@ export const Item = ({
     onExpand?.();
   };
 
+  const create = useMutation(api.documents.create);
+  const router = useRouter();
+
+  const onCreate = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    event.stopPropagation();
+    if (!id) return;
+
+    const promise = create({ title: "Untitled", parentDocument: id }).then(
+      (documentId) => {
+        if (!expanded) {
+          onExpand?.();
+        }
+        //router.push(`/documents/${documentId}`);
+      }
+    );
+
+    toast.promise(promise, {
+      loading: "Creating a new note...",
+      success: "New note created!",
+      error: "Failed to create new note.",
+    });
+  };
+
   const ChevronIcon = expanded ? ChevronDown : ChevronRight;
 
   return (
@@ -69,6 +96,17 @@ export const Item = ({
         <kdb className="ml-auto pointer-events-none inline-flex h-5 items-center gap-1 rounded border bg-muted px-1.5 select-none font-mono text-[10px] font-medium text-muted-foreground opacity-100">
           <span className="text-xs">⌘</span>K
         </kdb>
+      )}
+      {!!id && (
+        <div className="ml-auto flex items-center gap-x-2">
+          <div
+            className="opacity-0 group-hover:opacity-100 rounded-sm hover:bg-neutral-300 ml-auto h-full dark:hover:bg-neutral-600"
+            role="button"
+            onClick={onCreate}
+          >
+            <Plus className="h-4 w-4 text-muted-foreground" />
+          </div>
+        </div>
       )}
     </div>
   );
