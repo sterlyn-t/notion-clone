@@ -56,13 +56,11 @@ const UserItem = () => {
           </div>
         </div>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
-          <SignOutButton
-            className="cursor-pointer w-full text-muted-foreground"
-            asChild
-          >
-            Log out
-          </SignOutButton>
+        <DropdownMenuItem
+          className="cursor-pointer w-full text-muted-foreground"
+          asChild
+        >
+          <SignOutButton>Log out</SignOutButton>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
